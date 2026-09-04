@@ -203,7 +203,7 @@ def RandomVacuumAgent():
     >>> environment.status == {(1,0):'Clean' , (0,0) : 'Clean'}
     True
     """
-    return Agent(RandomAgentProgram(['Right', 'Left', 'Suck', 'NoOp']))
+    return Agent(RandomAgentProgram(['Right', 'Left', 'Up', 'Down', 'Suck', 'NoOp']))
 
 
 def TableDrivenVacuumAgent():
@@ -247,7 +247,11 @@ def ReflexVacuumAgent():
         elif location == loc_A:
             return 'Right'
         elif location == loc_B:
+            return 'Down'
+        elif location == loc_D:
             return 'Left'
+        elif location == loc_C:
+            return 'Up'
 
     return Agent(program)
 
@@ -826,14 +830,26 @@ class TrivialVacuumEnvironment(Environment):
         if action == 'Right' and agent.location == (0,0):
             agent.location = loc_B
             agent.performance -= 1
-        elif action == 'Right' and agent.location == (1,0):
+        elif action == 'Right' and agent.location == (0,1):
             agent.location = loc_D
             agent.performance -= 1
-        elif action == 'Left' and agent.location == (0,1):
+        elif action == 'Left' and agent.location == (1,0):
             agent.location = loc_A
             agent.performance -= 1
-        elif action == 'Down':
+        elif action == 'Left' and agent.location == (1,1):
             agent.location = loc_C
+            agent.performance -= 1
+        elif action == 'Down' and agent.location == (0,0):
+            agent.location = loc_C
+            agent.performance -= 1
+        elif action == 'Down' and agent.location == (1,0):
+            agent.location = loc_D
+            agent.performance -= 1
+        elif action == 'Up' and agent.location == (0,1):
+            agent.location = loc_A
+            agent.performance -= 1
+        elif action == 'Up' and agent.location == (1,1):
+            agent.location = loc_B
             agent.performance -= 1
         
         elif action == 'Suck':
@@ -841,9 +857,13 @@ class TrivialVacuumEnvironment(Environment):
                 agent.performance += 10
             self.status[agent.location] = 'Clean'
 
+## Should the agent be penalized for doing an invalid action? 
+## For example if it chooses Left while its already at loc_A, should it still get agent.performance -= 1
+## - Carter
+
     def default_location(self, thing):
         """Agents start in either location at random."""
-        return random.choice([loc_A, loc_B])
+        return random.choice([loc_A, loc_B, loc_C, loc_D])
 
 
 # ______________________________________________________________________________
